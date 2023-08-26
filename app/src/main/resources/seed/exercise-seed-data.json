@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "name": "Bench Press",
+    "exerciseScience": {
+      "study": "Effects of Bench Press Technique on Muscle Activation",
+      "findings": "Activates primarily pectorals, deltoids, and triceps",
+      "citation": {
+        "author": "Dr. John Smith",
+        "year": 2018,
+        "title": "Bench Press and Muscle Activation",
+        "source": "Journal of Sports Science"
+      },
+      "jointAction": {
+        "type": "Extension",
+        "jointsInvolved": ["Elbow", "Shoulder"]
+      },
+      "biomechanics": {
+        "forceDirection": "Vertical",
+        "equipment": "Barbell"
+      },
+      "metabolicPathway": {
+        "type": "ANAEROBIC_ALACTIC",
+        "description": "Primarily utilizes the ATP-CP system"
+      },
+      "muscleActivations": [
+        {
+          "muscle": "Pectoral Major",
+          "activationLevel": "High"
+        },
+        {
+          "muscle": "Anterior Deltoid",
+          "activationLevel": "Medium"
+        }
+      ]
+    }
+  },
+  {
+    "id": "2",
+    "name": "Squat",
+    "exerciseScience": {
+      "study": "Biomechanics of the Squat",
+      "findings": "Activates quadriceps, hamstrings, glutes, and lower back",
+      "citation": {
+        "author": "Dr. Emily Johnson",
+        "year": 2020,
+        "title": "The Squat and Lower Body Activation",
+        "source": "Journal of Athletic Training"
+      },
+      "jointAction": {
+        "type": "Flexion",
+        "jointsInvolved": ["Knee", "Hip"]
+      },
+      "biomechanics": {
+        "forceDirection": "Vertical",
+        "equipment": "Barbell or Body Weight"
+      },
+      "metabolicPathway": {
+        "type": "AEROBIC_OXIDATIVE",
+        "description": "Utilizes the aerobic system for longer sets"
+      },
+      "muscleActivations": [
+        {
+          "muscle": "Quadriceps",
+          "activationLevel": "High"
+        },
+        {
+          "muscle": "Gluteus Maximus",
+          "activationLevel": "High"
+        }
+      ]
+    }
+  }
+]

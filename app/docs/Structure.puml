@@ -1,0 +1,336 @@
+@startuml
+
+!define RECTANGLE class
+
+skinparam class {
+  BackgroundColor<<NOTE>> Yellow
+  BorderColor<<NOTE>> Black
+  FontColor<<NOTE>> Black
+  BorderThickness<<NOTE>> 2
+}
+
+package "app" {
+
+
+    package "user" {
+        RECTANGLE User {
+            + email: String
+            + password: String
+            + username: String
+            + roles: List<Role>
+            + disabled: Boolean
+        }
+
+        ENUM RoleType {
+            + ADMIN
+            + USER
+            + TRAINER
+        }
+
+        package "child" {
+            RECTANGLE Role {
+                + type: RoleType
+                + description: String
+            }
+            RECTANGLE UserPreferences {
+                + user: UserId
+                + colorScheme: String
+                + notificationsEnabled: Boolean
+                + preferredWorkoutTime: Time
+                + preferredWorkoutDays: List<Day>
+                + preferredWorkoutDuration: Integer
+                + preferredWorkoutDifficulty: Difficulty
+            }
+
+            RECTANGLE MuscleRecoveryStatus {
+                + user: UserId
+                + muscle: MuscleId
+                + lastWorkedOut: Date
+                + recoveryLevel: Float
+                + nextRecommendWorkout: Date
+                + currentColorCode: String
+                + muscleRecoveryPercentage: Integer
+                + fatigueLevel: Float
+                + muscleTemperature: Float
+            }
+
+            RECTANGLE MuscleProfile {
+                + user: UserId
+                + muscle: MuscleId
+                + muscleStrength: Float
+                + muscleEndurance: Float
+                + muscleWeakness: Float
+            }
+
+            RECTANGLE MuscleInjuryLog {
+                + user: UserId
+                + muscle: MuscleId
+                + injury: MuscleInjuryId
+                + estimatedRecoveryDate: Date
+                + severity: Integer
+                + dateOfInjury: Date
+            }
+
+            package "history" {
+                RECTANGLE WorkoutHistory {
+                    + user: UserId
+                    + sessions: List<WorkoutSessionId>
+                }
+                RECTANGLE WorkoutSession {
+                    + workoutSessionId: UUID
+                    + workout: WorkoutId
+                    + date: Date
+                    + duration: Integer
+                    + exercises: List<ExerciseLogId>
+                }
+                RECTANGLE ExerciseLog {
+                    + exerciseLogId: UUID
+                    + exercise: ExerciseId
+                    + sets: List<Set>
+                    + duration: Integer
+                }
+                RECTANGLE Set {
+                    + reps: Integer
+                    + weight: Float
+                    + time: Time
+                }
+            }
+            RECTANGLE Feedback {
+                + feedbackId: UUID
+                + exercise: ExerciseId
+                + rating: Integer
+                + comment: String
+            }
+        }
+
+    }
+
+    package "fitness" {
+        package "exercise" {
+            RECTANGLE Exercise {
+                + exerciseId: UUID
+                + name: string
+                + description: string
+                + duration: Integer
+                + difficulty: Difficulty
+                + category: Category
+                + videoURL: URL
+            }
+
+            ENUM Category {
+                + CARDIO
+                + STRENGTH
+                + FLEXIBILITY
+            }
+
+            package "child" {
+                RECTANGLE ExerciseInstruction {
+                    + stepNumber: Integer
+                    + instruction: string
+                }
+                RECTANGLE Step {
+                    + description: string
+                    + media: URL
+                }
+
+                note right of Step: Step is not a child entity\nbecause it doesn't have an\nindependent lifecycle.
+
+
+                ExerciseInstruction "1" -- "0..*" Step : contains
+
+                package "science" {
+                    RECTANGLE ExerciseScience {
+                        + study: String
+                        + findings: String
+                    }
+                    RECTANGLE MuscleActivation {
+                        + muscle: String
+                        + activationLevel: Float
+                    }
+                    RECTANGLE JointAction {
+                        + joint: String
+                        + action: String
+                    }
+                    RECTANGLE Biomechanics {
+                        + force: String
+                        + angle: Float
+                    }
+                    RECTANGLE MetabolicPathway {
+                        + type: Enum
+                        + description: String
+                    }
+                    RECTANGLE Citation {
+                        + author: String
+                        + year: Integer
+                        + title: String
+                        + source: URL
+                    }
+
+                    ' Relationships within ExerciseScience package
+                    ExerciseScience "1" -- "1" Citation : contains
+                    ExerciseScience "1" -- "1" JointAction : contains
+                    ExerciseScience "1" -- "1" Biomechanics : contains
+                    ExerciseScience "1" -- "1" MetabolicPathway : contains
+                    ExerciseScience "1" -- "0..*" MuscleActivation : contains
+                }
+
+                ' Relationships within child package
+                Exercise "1" -- "0..*" ExerciseInstruction : contains
+                Exercise "1" -- "1" ExerciseScience : contains
+            }
+        }
+        package "muscle" {
+            RECTANGLE Muscle {
+                + muscleId: UUID
+                + name: String
+                + location: String
+                + function: String
+                + muscleGroup: MuscleGroupId
+            }
+
+             ' Nerves that control the muscle (Innervation)
+            RECTANGLE Innervation {
+                + nerve: String
+                + spinalLevel: String
+                + function: String
+            }
+
+            note right of Innervation: Innervation is not a child entity\nbecause it's more of an attribute of Muscle.\nIt doesn't have its own lifecycle.
+
+
+            package "child" {
+                RECTANGLE MuscleAction {
+                    + type: MuscleActionTypeEnum
+                    + description: String
+                    + speed: Float
+                    + force: Float
+                }
+                RECTANGLE MuscleFiberType {
+                    + type: MuscleFiberTypeEnum
+                    + description: String
+                    + oxidativeCapacity: Float
+                    + contractileSpeed: Float
+                    + fatigueResistance: Float
+                }
+                RECTANGLE MuscleType {
+                    + type: MuscleTypeEnum
+                    + description: String
+                    + location: String
+                    + primaryFunction: String
+                    + isVoluntary: Boolean
+                }
+
+                RECTANGLE MuscleInjury {
+                    + type: String
+                    + description: String
+                    + recoveryTime: Integer
+                }
+
+                ENUM MuscleActionTypeEnum {
+                    + CONTRACTION
+                    + EXTENSION
+                }
+                ENUM MuscleFiberTypeEnum {
+                    + SLOW
+                    + FAST
+                }
+                ENUM MuscleTypeEnum {
+                    + SKELETAL
+                    + SMOOTH
+                    + CARDIAC
+                }
+
+                ' Relationships within child package
+                Muscle "1" -- "1" MuscleAction : contains
+                Muscle "1" -- "1" MuscleFiberType : contains
+                Muscle "1" -- "1" MuscleType : contains
+                Muscle "1" -- "1" Innervation : contains
+                Muscle "1" -- "1" MuscleInjury : contains
+            }
+        }
+        Exercise "0..*" -- "1" Muscle : targets
+
+        package "muscleGroup" {
+            RECTANGLE MuscleGroup {
+                + name: String
+                + muscles: List<MuscleId>
+            }
+            package "child" {
+                RECTANGLE Function {
+                    + type: Enum
+                    + description: String
+                }
+            }
+
+            MuscleGroup "1" -- "1" Function : contains
+        }
+
+        package "workout" {
+            RECTANGLE WorkoutPlan {
+                + name: String
+                + workouts: List<WorkoutId>
+                + goal: Goal
+            }
+            ENUM Goal {
+                + WEIGHT_LOSS
+                + MUSCLE_GAIN
+                + STRENGTH_GAIN
+                + FLEXIBILITY_GAIN
+            }
+            package "child" {
+                RECTANGLE Workout {
+                    + name: String
+                    + description: String
+                    + duration: Integer
+                    + difficulty: Difficulty
+                    + exercises: List<ExerciseId>
+                    + creatorId: UserId
+                }
+            }
+
+            Workout "1" -- "1..*" Exercise : contains
+            WorkoutPlan "1" -- "1..*" Workout : contains
+        }
+
+        package "common" {
+            ENUM Difficulty {
+                + EASY
+                + MEDIUM
+                + HARD
+            }
+        }
+
+
+        package "equipment" {
+            RECTANGLE Equipment {
+                + equipmentId: UUID
+                + name: String
+                + description: String
+                + type: EquipmentType
+            }
+
+            ENUM EquipmentType {
+                + FREE_WEIGHT
+                + MACHINE
+                + ACCESSORY
+            }
+
+        }
+        Exercise "0..*" -- "0..1" Equipment : requires
+    }
+
+
+}
+User "1" -- "1..*" Feedback : has
+User "1" -- "0..*" Role : has
+User "1" -- "1" UserPreferences : has
+User "1" -- "1..*" MuscleRecoveryStatus : has
+User "1" -- "1..*" MuscleInjuryLog : has
+User "1" -- "1..*" MuscleProfile : has
+WorkoutHistory "1" -- "0..*" WorkoutSession : contains
+WorkoutSession "1" -- "1..*" ExerciseLog : contains
+ExerciseLog "0..*" -- "1" Set : contains
+User "1" -- "1..*" WorkoutSession : performs
+User "1" -- "1..*" WorkoutPlan : owns
+Muscle "0..*" -- "1" MuscleGroup : contains
+@enduml
